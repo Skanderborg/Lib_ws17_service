@@ -1,0 +1,1079 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:uni="https://uni-login.dk" xmlns:tns="https://uni-login.dk/data" elementFormDefault="qualified" targetNamespace="https://uni-login.dk/data" xml:lang="da" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="https://wsieksport.uni-login.dk:443/wsieksport-v4/ws?xsd=3" namespace="https://uni-login.dk" />
+  <xs:annotation>
+    <xs:documentation>Basisskema for import og eksport</xs:documentation>
+  </xs:annotation>
+  <xs:attributeGroup name="importSourceAttrs">
+    <xs:annotation>
+      <xs:documentation>
+                Attributter, der identificerer en import.
+                Anvendes i rodelementet i import og til oplistning af kilder i eksport.
+            </xs:documentation>
+    </xs:annotation>
+    <xs:attribute name="sourceDateTime" type="xs:dateTime" use="required">
+      <xs:annotation>
+        <xs:documentation>
+                    Tidspunkt for eksport af data fra kildesystemet.
+                    Ved import skal tidspunktet være nyere end tidspunktet for sidste eksport, der er indlæst.
+                </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="source" type="tns:source" use="required" />
+    <xs:attribute name="schoolYear" use="required">
+      <xs:simpleType>
+        <xs:annotation>
+          <xs:documentation>Skoleår angivet i formatet YYYY-YYYY, f.eks.: "2016-2017".</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+          <xs:pattern value="2[0-9]{3}-2[0-9]{3}" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:complexType name="institutionBase">
+    <xs:annotation>
+      <xs:documentation>
+                Basistype for institution uden grupper. Anvendes kun direkte i delete-skemaet,
+                mens andre anvender institutionWithGroupsBase.
+                Tilføjes: InstitutionPerson
+            </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="InstitutionNumber" type="uni:Regnr">
+        <xs:annotation>
+          <xs:documentation>
+                        Seks-tegns registreringsnummer, som identificerer en institution (kan indeholde både bogstaver og tal).
+                    </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="InstitutionName" type="uni:NonEmptyToken">
+        <xs:annotation>
+          <xs:documentation>Institutionsnavn. Kun information. Gemmes ikke i UNI•Login.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="institutionWithGroupsBase">
+    <xs:annotation>
+      <xs:documentation>
+                Den egentlige basistype for institution, der anvendes i import og eksport.
+                Tilføjes: InstitutionPerson (jf. institutionBase)
+            </xs:documentation>
+    </xs:annotation>
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:institutionBase">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="Group" type="tns:group">
+            <xs:annotation>
+              <xs:documentation>Grupper på institutionen.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="group">
+    <xs:annotation>
+      <xs:documentation>
+                Grupper bruges til samling af personer på en institution. Både elever og lærere kan tilknyttes grupper.
+                En gruppe kan f.eks. være klasser i grundskolen, hold, fag, studiegrupper eller lærerteams.
+                Der er i gruppebegrebet ingen begrænsninger, i forhold til hvad den enkelte institution vil bruge det
+                til.
+                Grupper kan oprettes både eksplicit og implicit. Group-elementet bruges til eksplicit oprettelse af
+                grupper i forbindelse med import og alle attributter på gruppen kan udfyldes.
+                Hvis en gruppe refereres fra personer uden at den er oprettet med Group elementet, foretager UNI•Login
+                en implicit oprettelse af gruppen med blot et GroupId.
+            </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="GroupId" type="uni:Gruppekode">
+        <xs:annotation>
+          <xs:documentation>
+                        Gruppeid/holdID/fagkode som er unikt på institutionen. For eksempel "4a", "Tysk I" eller
+                        "Dansklærere".
+                        GroupId vises i brugerdministrationen og bruges ligeledes i forbindelse med tildeling af for
+                        eksempel licenser.
+                        Elever og lærere kan tilknyttes gruppen ved at angive MainGroupId eller GroupId på personen.
+                    </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="GroupName" type="uni:Token100char">
+        <xs:annotation>
+          <xs:documentation>
+                        Alias for GroupId, hvis man ønsker et supplerende navn til gruppen.
+                        For eksempel, hvis 0b også kaldes ”Solsikken”, kan det angives her.
+                        Hvis det er en implicit oprettelse sættes GroupName lig med GroupId.
+                    </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="GroupType" type="tns:importGroupType">
+        <xs:annotation>
+          <xs:documentation>Typen af gruppe der oprettes.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="GroupLevel" type="uni:Trin">
+        <xs:annotation>
+          <xs:documentation>
+                        Stamklassens/hovedgruppens trin.
+                        Skal angives for grupper med groupType "Hovedgruppe" og kun da.
+                    </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="Line" type="uni:Token40char">
+        <xs:annotation>
+          <xs:documentation>
+                        Spor, linje, studieretning eller lignende for klassen/stamholdet.
+                        For grundskoler f.eks. "B".
+                    </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="FromDate" type="xs:date">
+        <xs:annotation>
+          <xs:documentation>
+                        Gruppens startdato.
+                    </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="ToDate" type="xs:date">
+        <xs:annotation>
+          <xs:documentation>Gruppens slutdato.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="LocalPersonId" type="tns:localPersonId" />
+  <xs:simpleType name="localPersonId">
+    <xs:annotation>
+      <xs:documentation>
+                Den lokale identifikation af personen på institutionen.
+                Identifikationen bruges til at genkende personer fra en import til den næste. Identifikationen skal
+                derfor være unik inden for en import, således at InstitutionNumber+source+LocalPersonId skal være unik.
+                Identifikationen skal være uforanderlig, således at en person, der én gang er importeret med et
+                LocalPersonId, skal have det samme LocalPersonId i alle fremtidige importer.
+            </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="tns:singleToken">
+      <xs:maxLength value="18" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="personMini">
+    <xs:annotation>
+      <xs:documentation>
+                Minimal repræsentation af persondata. Anvendes direkte i lille eksport.
+            </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element ref="tns:FirstName" />
+      <xs:element ref="tns:FamilyName" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="personMedium">
+    <xs:annotation>
+      <xs:documentation>
+                Mellemstor udgave af persondata. Anvendes direkte i medium eksport.
+                Basistype for personFull; se nedenfor.
+            </xs:documentation>
+    </xs:annotation>
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:personMini">
+        <xs:sequence>
+          <xs:element minOccurs="0" ref="tns:CivilRegistrationNumber">
+            <xs:annotation>
+              <xs:documentation>
+                <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                                    Obligatorisk i import.
+                                    Vises ikke i eksport for personer med navne- og adressebeskyttelse.
+                                </xs:documentation>
+              </xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element minOccurs="0" ref="tns:EmailAddress" />
+          <xs:element minOccurs="0" ref="tns:BirthDate" />
+          <xs:element minOccurs="0" ref="tns:Gender" />
+          <xs:element minOccurs="0" ref="tns:PhotoId" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="personFullBase">
+    <xs:annotation>
+      <xs:documentation>
+                Base for fuld udgave af persondata.
+                Anvendes i import og fuld eksport.
+                Tilføjes: HomePhoneNumber, WorkPhoneNumber, MobilePhoneNumber
+                (De tre er ikke defineret ved hjælpe af elementreferencer, fordi de
+                skal være nillable i eksport.)
+                I importskemaet defineres nogle elementer som obligatoriske, mens
+                de i eksport kan mangle pga. manglende data i ældre importer eller
+                manuelt oprettede brugere.
+                Desuden har import oplysninger om alias ved navnebeskyttelse.
+            </xs:documentation>
+    </xs:annotation>
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:personMedium">
+        <xs:sequence>
+          <xs:element minOccurs="0" ref="tns:Address" />
+        </xs:sequence>
+        <xs:attribute name="protected" type="xs:boolean" use="required">
+          <xs:annotation>
+            <xs:documentation>
+                            Har personen navne- og adressebeskyttelse?
+                            Hvis true, skal AliasFirstName og AliasFamilyName være sat i import, og kun da.
+                        </xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="verificationLevel" type="uni:Verifikationsniveau" use="required">
+          <xs:annotation>
+            <xs:documentation>
+                            Er informationen vedrørende personen verificeret i CPR-registret?
+                            Er altid 0, hvis protected er true.
+                        </xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="FirstName" type="tns:name">
+    <xs:annotation>
+      <xs:documentation>Fornavne.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="FamilyName" type="tns:familyName">
+    <xs:annotation>
+      <xs:documentation>Efternavn.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="CivilRegistrationNumber" type="tns:civilRegistrationNumber">
+    <xs:annotation>
+      <xs:documentation>Personnummer. Se dokumentation til type.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="EmailAddress" type="tns:email">
+    <xs:annotation>
+      <xs:documentation>E-mail.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="BirthDate" type="xs:date">
+    <xs:annotation>
+      <xs:documentation>Fødselsdato.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="Gender" type="tns:gender">
+    <xs:annotation>
+      <xs:documentation>Personens køn.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="PhotoId">
+    <xs:annotation>
+      <xs:documentation>Benyttes til at navngive foto med.</xs:documentation>
+    </xs:annotation>
+    <xs:simpleType>
+      <xs:restriction base="uni:NonEmptyToken">
+        <xs:maxLength value="30" />
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="Address" type="tns:address">
+    <xs:annotation>
+      <xs:documentation>Adresse.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="address">
+    <xs:annotation>
+      <xs:documentation>Adresseoplysninger. Anvendes i person.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element minOccurs="0" ref="tns:StreetAddress" />
+      <xs:element minOccurs="0" ref="tns:PostalCode" />
+      <xs:element minOccurs="0" ref="tns:PostalDistrict" />
+      <xs:element minOccurs="0" ref="tns:CountryCode" />
+      <xs:element minOccurs="0" ref="tns:Country" />
+      <xs:element minOccurs="0" ref="tns:MunicipalityCode" />
+      <xs:element minOccurs="0" ref="tns:MunicipalityName" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="StreetAddress">
+    <xs:annotation>
+      <xs:documentation>Adressens vejnavn, nummer og etage.</xs:documentation>
+    </xs:annotation>
+    <xs:simpleType>
+      <xs:restriction base="uni:NonEmptyToken">
+        <xs:maxLength value="100" />
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="PostalCode">
+    <xs:annotation>
+      <xs:documentation>Postnummer.</xs:documentation>
+    </xs:annotation>
+    <xs:simpleType>
+      <xs:restriction base="uni:NonEmptyToken">
+        <xs:maxLength value="20" />
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="PostalDistrict">
+    <xs:annotation>
+      <xs:documentation>By.</xs:documentation>
+    </xs:annotation>
+    <xs:simpleType>
+      <xs:restriction base="uni:NonEmptyToken">
+        <xs:maxLength value="100" />
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="CountryCode" type="tns:countryCode">
+    <xs:annotation>
+      <xs:documentation>
+                Adressens landekode efter ISO-3166-1 alpha-2.
+                Danmark er "DK", Grønland er "GL", og Færøerne er "FO".
+            </xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="Country">
+    <xs:annotation>
+      <xs:documentation>Adressens land.</xs:documentation>
+    </xs:annotation>
+    <xs:simpleType>
+      <xs:restriction base="uni:NonEmptyToken">
+        <xs:maxLength value="30" />
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="MunicipalityCode">
+    <xs:annotation>
+      <xs:documentation>Kommunekode.</xs:documentation>
+    </xs:annotation>
+    <xs:simpleType>
+      <xs:restriction base="uni:NonEmptyToken">
+        <xs:maxLength value="6" />
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="MunicipalityName" type="uni:Token75char">
+    <xs:annotation>
+      <xs:documentation>Kommunenavn.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="phoneNumberProtectable">
+    <xs:annotation>
+      <xs:documentation>
+                Telefonnummer med oplysning om, hvorvidt telefonnummeret er beskyttet.
+                Hvis telefonnummeret er beskyttet, er kun attributten sat, mens elementet
+                er tomt.
+                Anvendes i fuld eksport. Se til phoneNumberWithProtectionInfo for import.
+            </xs:documentation>
+    </xs:annotation>
+    <xs:simpleContent>
+      <xs:extension base="tns:phoneNumberOrEmpty">
+        <xs:attribute name="protected" type="xs:boolean" use="required">
+          <xs:annotation>
+            <xs:documentation>Er telefonnummeret beskyttet?</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="phoneNumberWithProtectionInfo">
+    <xs:annotation>
+      <xs:documentation>
+                Telefonnummer med oplysning om, hvorvidt telefonnummeret er beskyttet.
+                Anvendes i import.
+            </xs:documentation>
+    </xs:annotation>
+    <xs:simpleContent>
+      <xs:restriction base="tns:phoneNumberProtectable">
+        <xs:minLength value="1" />
+      </xs:restriction>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:element name="Employee" type="tns:employee">
+    <xs:annotation>
+      <xs:documentation>Læreroplysninger om personen.</xs:documentation>
+    </xs:annotation>
+    <xs:unique name="unik_Ansatrolle_pr_ansat">
+      <xs:selector xpath="tns:Role" />
+      <xs:field xpath="." />
+    </xs:unique>
+  </xs:element>
+  <xs:complexType name="employeeBase">
+    <xs:annotation>
+      <xs:documentation>
+                Basistype for læreroplysninger.
+                Der anvendes nedarvning for at undgå at udskille Type som element
+                for at implementere overgangsskemaet.
+            </xs:documentation>
+    </xs:annotation>
+  </xs:complexType>
+  <xs:complexType name="employee">
+    <xs:annotation>
+      <xs:documentation>Læreroplysninger. Anvendes i institutionPerson.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:employeeBase">
+        <xs:sequence>
+          <xs:element maxOccurs="unbounded" name="Role" type="uni:Ansatrolle" />
+          <xs:element minOccurs="0" ref="tns:ShortName" />
+          <xs:element minOccurs="0" ref="tns:Occupation" />
+          <xs:element minOccurs="0" ref="tns:Location" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" ref="tns:GroupId">
+            <xs:annotation>
+              <xs:documentation>De grupper, som medarbejderen er tilknyttet.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="ShortName">
+    <xs:annotation>
+      <xs:documentation>Initialer.</xs:documentation>
+    </xs:annotation>
+    <xs:simpleType>
+      <xs:restriction base="uni:NonEmptyToken">
+        <xs:maxLength value="20" />
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="Occupation">
+    <xs:annotation>
+      <xs:documentation>Stilling.</xs:documentation>
+    </xs:annotation>
+    <xs:simpleType>
+      <xs:restriction base="uni:NonEmptyToken">
+        <xs:maxLength value="60" />
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:complexType name="studentMini">
+    <xs:annotation>
+      <xs:documentation>
+                Minimal basistype for student.
+                Elevoplysninger. Anvendes i institutionPerson.
+                I import og fuld eksport tilføjes ContactPerson.
+            </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="Role" type="uni:Elevrolle">
+        <xs:annotation>
+          <xs:documentation>Hvilke rolle har eleven.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="StudentNumber">
+        <xs:annotation>
+          <xs:documentation>Elevens studienummer fra lokalt administrativt system.</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="uni:NonEmptyToken">
+            <xs:maxLength value="26" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="Level" type="uni:Trin">
+        <xs:annotation>
+          <xs:documentation>Elevens trin.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" ref="tns:Location" />
+      <xs:element name="MainGroupId" type="uni:Gruppekode">
+        <xs:annotation>
+          <xs:documentation>
+                        Elevens hovedgruppe.
+                        For grundskoler er hovedgruppen elevens klasse, og for andre
+                        institutioner kan den for eksempel være studieretning eller stamhold.
+                        Feltet skal indeholde gruppens unikke id på institutionen (GroupId)
+                        og må kun referere til grupper med groupType "Hovedgruppe".
+                        Bemærk, at dette krav ikke kan garanteres at være overholdt i eksporten
+                        pga. gamle importer og manuelt tilknyttede brugere.
+                    </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="unbounded" ref="tns:GroupId">
+        <xs:annotation>
+          <xs:documentation>
+                        Yderligere grupper, som eleven er tilknyttet, ud over tilknytningen via MainGroupId.
+                    </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Location" type="uni:Token75char">
+    <xs:annotation>
+      <xs:documentation>Afdeling, bygning eller værelsesnummer på efterskoler.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="GroupId" type="uni:Gruppekode">
+    <xs:annotation>
+      <xs:documentation>
+                Feltet skal indeholde gruppens unikke id på institutionen (GroupId).
+            </xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="contactPersonBase">
+    <xs:annotation>
+      <xs:documentation>
+                Basistype for contactPerson. Anvendes i student i import og fuld eksport.
+                Oplysninger om kontaktperson.
+                Tilføjes Person, samt UNILogin i eksport.
+            </xs:documentation>
+    </xs:annotation>
+    <xs:attribute name="relation" type="tns:contactPersonRelation" use="required">
+      <xs:annotation>
+        <xs:documentation>Kontaktpersonens relation til eleven.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="childCustody" type="xs:boolean" use="required">
+      <xs:annotation>
+        <xs:documentation>Har personen forældremyndighed?</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="accessLevel" type="uni:KontaktpersonAdgangsniveau">
+      <xs:annotation>
+        <xs:documentation>
+                    Niveau for adgang til personoplysninger om den tilknyttede elev.
+                    NB! Hvis kontaktpersonen ikke er forældremyndighedsindehaver, skal hjemmel opnås
+                    på anden vis.
+                    Attributten er valgfri i import. Hvis udeladt, regnes værdien implicit for 0 ved
+                    childCustody=false og 1 ved childCustody=true. I eksport vil værdien altid være
+                    angivet, uanset om den var implicit eller eksplicit i importen
+                </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:element name="Extern" type="tns:extern">
+    <xs:annotation>
+      <xs:documentation>Oplysninger om ekstern person.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="extern">
+    <xs:annotation>
+      <xs:documentation>
+                Type til en ekstern person. Anvendes i InstitutionPerson i import og eksport.
+            </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="Role" type="uni:Eksternrolle" />
+      <xs:element minOccurs="0" maxOccurs="unbounded" ref="tns:GroupId">
+        <xs:annotation>
+          <xs:documentation>De grupper, som den eksterne person er tilknyttet.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="uniLoginMini">
+    <xs:annotation>
+      <xs:documentation>
+                Minimal basistype for UNI•Login-oplysninger.
+                Anvendes direkte i lille eksport.
+            </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element ref="tns:UserId" />
+      <xs:element minOccurs="0" ref="tns:Name" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="uniLoginFull">
+    <xs:annotation>
+      <xs:documentation>
+                Type for UNI•Login-oplysninger i fuld og medium eksport og returværdi i import.
+                I lille eksport anvendes den minimale type.
+            </xs:documentation>
+    </xs:annotation>
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:uniLoginMini">
+        <xs:sequence>
+          <xs:element ref="tns:InitialPassword" />
+          <xs:element ref="tns:CivilRegistrationNumber" />
+          <xs:element ref="tns:PasswordState" />
+          <xs:element ref="tns:UniqueName" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="UserId" type="tns:singleToken">
+    <xs:annotation>
+      <xs:documentation>
+                Unik UNI•Login-brugerid.
+            </xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="Name" type="uni:NonEmptyToken">
+    <xs:annotation>
+      <xs:documentation>
+                Brugerens navn i UNI•Login, f.eks.: "Peter Hansen".
+                Af hensyn til visse manuelt oprettede brugere, valideres denne ikke mod typen "name".
+            </xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="InitialPassword" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>
+                Det password, som brugeren fik ved oprettelsen, eller sidst det blev nulstillet.
+            </xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="PasswordState" type="tns:passwordState" />
+  <xs:element name="UniqueName" type="uni:NonEmptyToken">
+    <xs:annotation>
+      <xs:documentation>
+                Brugerens unikke navn i UNI•Login. Bruges f.eks. i SkoleKom.
+                F.eks.: "Peter Hansen46"
+            </xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:simpleType name="singleToken">
+    <xs:annotation>
+      <xs:documentation>Basistype for ikke-tomme strenge, der ikke må indeholde whitespace.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:token">
+      <xs:pattern value="[^ ]+" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="source">
+    <xs:annotation>
+      <xs:documentation>
+                Identifikation af kildesystem.
+                I import er det navnet på kildesystemet, mens det i eksporten p.t. desuden indeholder
+                en typeoplysning, fordi det samme kildenavn kan være brugt til ældre importsystemer.
+                Navnet bruges sammen med institutionens registreringsnummer til identifikation af importen.
+            </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="uni:NonEmptyToken" />
+  </xs:simpleType>
+  <xs:simpleType name="importGroupType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Hovedgruppe" />
+      <xs:enumeration value="Årgang" />
+      <xs:enumeration value="Retning" />
+      <xs:enumeration value="Hold" />
+      <xs:enumeration value="SFO" />
+      <xs:enumeration value="Team" />
+      <xs:enumeration value="Andet" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="name">
+    <xs:annotation>
+      <xs:documentation>
+                Type for navne, både for-/mellemnavne og fulde navne.
+                P.t. laves ingen validering.
+            </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="uni:NonEmptyToken">
+      <xs:maxLength value="99" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="familyName">
+    <xs:annotation>
+      <xs:documentation>
+                Type for efternavne.
+                P.t. laves ingen validering (f.eks. ingen forhindring af mellemrum).
+            </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="tns:name" />
+  </xs:simpleType>
+  <xs:simpleType name="email">
+    <xs:annotation>
+      <xs:documentation>
+                Valideret email-adresse.
+                Local part (før snabela) og DNS labels (efter snabela) er
+                implementeret efter RFC 3696.
+                Dog er den arkaiske quoted string (local part med double quote,
+                hvori der kan stå nærmest hvad som helst) ikke tilladt.
+                Desuden er Unicode tilladt jf. hhv. RFC 6531 og RFC 5890.
+                TLD baseres på samme regler, selvom tal og tegn p.t. kun
+                findes i form af punycode-encodede navne.
+                Enkeltdelene valideres ikke mod maksimal-længder.
+
+                Dvs.:
+                I local part (før snabela) er følgende tegn tilladt:
+                - alfanumeriske tegn i ASCII
+                - tegnene ! # $ % &amp; ' * + - / = ? ^ _ ` { | } ~
+                - Unicode: Alt uden for ASCII
+                - desuden punktum, men ikke i start og slut og ikke efterfulgt af endnu et punktum
+                I domænet er følgende tegn tilladt, adskilt af punktum:
+                - alfanumeriske tegn i ASCII
+                - Unicode: Alt uden for ASCII
+                - desuden bindestreger, men ikke i start og slut
+                Top-level domain (TLD) skal være på mindst to tegn.
+
+                Dvs. udtrykket kort kan skrives som følger, hvor L er tilladte tegn i local part
+                og D er tilladte tegn i DNS-labels:
+                L+(\.L+)*@(D+(-+D+)*\.)+D{2,}(-+D+)*
+
+                I skemaet er "alt uden for ASCII" udtrykt med:
+                \P{IsBasicLatin}
+                Se:
+                - https://www.w3.org/TR/xmlschema11-2/#cces-catesc
+                - https://www.w3.org/TR/xmlschema11-2/#dt-normalized-block-name
+                Skal man validere mod udtrykket uden for XSD kan dette give problemer.
+                Man kan alternativt forsøge en af følgende:
+                - \P{InBasicLatin}
+                - \P{BasicLatin}
+                - \P{ASCII}
+                - [^[:ascii:]]
+                - [^\x00-\x7F]
+                Følgende muligheder kan også prøves, men er næppe brugbare, hvis førnævnte ikke virker:
+                - [^\p{IsBasicLatin}]
+                - [^\p{InBasicLatin}]
+                - [^\p{BasicLatin}]
+                - [^\p{ASCII}]
+                - \p{^IsBasicLatin}
+                - \p{^InBasicLatin}
+                - \p{^BasicLatin}
+                - \p{^ASCII}
+                Hvis intet af dette virker, kan man udvælge tegn fra Unicode og føje til
+                den character class, der indeholder de tilladte ASCII-tegn. Dvs. man f.eks.
+                for at tillade æ, ø og å kan erstatte
+                ([!#-'*+\-/-9=?A-Z^-~]|\P{IsBasicLatin})
+                med
+                [!#-'*+\-/-9=?A-Z^-~ÆØÅæøå]
+            </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="([!#-'*+\-/-9=?A-Z^-~]|\P{IsBasicLatin})+(\.([!#-'*+\-/-9=?A-Z^-~]|\P{IsBasicLatin})+)*@(([0-9A-Za-z]|\P{IsBasicLatin})+(-+([0-9A-Za-z]|\P{IsBasicLatin})+)*\.)+([0-9A-Za-z]|\P{IsBasicLatin}){2,}(-+([0-9A-Za-z]|\P{IsBasicLatin})+)*" />
+      <xs:maxLength value="150" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="phoneNumberOrEmpty">
+    <xs:annotation>
+      <xs:documentation>
+                Telefonnummer eller tom.
+                Anvendes i phoneNumberComplexHideable og phoneNumberComplex, hvor sidstnævnte ikke
+                tillader en tom værdi (se til disse typer).
+
+                Formatet kræver blot, at feltet et sted ligner et telefonnummer, hvilket forstås som
+                mindst seks cifre (af hensyn til grønlandske og færøske telefonnumre indtastet uden
+                landekode). De seks cifre må være blandet med mellemrum, bindestreger og parenteser.
+                Feltet må indeholde alt undtagen tal før de seks cifre. Efter de seks cifre må
+                feltet indeholde alt.
+
+                Før eventuel automatisk anvendelse fra eksport bør man derfor gøre følgende (med
+                forslag til Perl reg.exp.):
+                1.  Reducer til tegn, der matcher tegn fra et telefontastatur.
+                    s/[^0-9+#*]//g
+                2.  Fjern indledende # og *.
+                    s/^[#*]+//
+                3.  Erstat eventuel indledende "+" med "00".
+                    s/^\+/00/
+                4.  Fjern "+" (der kan være flere end landekodepræfikset, hvis det f.eks. er brugt
+                    til at markere omstillingskode)
+                    s/\+//g
+                5.  Reducer eventuelt til de første X cifre, afhængigt af postnummer og landekode
+                    (postnummer af hensyn til grønlandske og færøske numre). Det fulde nummer vil i
+                    visse tilfælde indeholde omstillingskode eller endnu et telefonnummer.
+                    Hvis postnummeret er fra Grønland eller Færøerne:
+                    s/^(?:0029[89])?([0-9]{6}).*/\1/
+                    Ellers, tag de første seks cifre fra grønlandske og færøske numre, alle cifre
+                    fra udenlandske numre eller otte cifre fra danske numre:
+                    s/^(?:0029[89]([0-9]{6})|(00(?!45).*)|(?:0045)?([0-9]{8})).*/\1\2\3/
+            </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:token">
+      <xs:pattern value="|[^0-9]*([0-9][ ()\-]*){6}.*" />
+      <xs:maxLength value="50" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="gender">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="M" />
+      <xs:enumeration value="K" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="contactPersonRelation">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Mor" />
+      <xs:enumeration value="Far" />
+      <xs:enumeration value="Andet" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="civilRegistrationNumber">
+    <xs:annotation>
+      <xs:documentation>
+                Personnummer på formen DDMMYYXXXX.
+                På skemaniveau testes datoens gyldighed (bortset fra 29. februar uden for skudår),
+                idet der også tages højde for midlertidige CPR-numre.
+                De specielle KOT-numre, 000000000 og en løs form til testbrugere slippes også igennem.
+            </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="((([06][1-9]|[1278][0-9]|[39][01])(0[13578]|1[02]))|(([06][1-9]|[1278][0-9]|[39]0)(0[469]|11))|(([06][1-9]|[1278][0-9])02))[0-9]{2}-?([0-9]{3}|[A-ZÆØÅ]{3})[0-9]|[0-9]{6}-?ZZZ9" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="passwordState">
+    <xs:annotation>
+      <xs:documentation>
+                Anvendes til PasswordState på uniLogin.
+                Er "valid", hvis brugeren ikke selv har skiftet sit UNI•Login-password. Dvs., at initialPassword
+                er gældende.
+                Er "changed", hvis brugeren har skiftet sit password.
+            </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="valid" />
+      <xs:enumeration value="changed" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="countryCode">
+    <xs:annotation>
+      <xs:documentation>
+                Landekoder, ISO-3166-1 alpha-2.
+                Listen er genereret fra:
+                http://www.iso.org/iso/home/standards/country_codes/country_names_and_code_elements_txt-temp.htm
+                Hentet d. 10/12, 2015.
+                På den pågældende URL kan man se, hvad koderne refererer til.
+            </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="AF" />
+      <xs:enumeration value="AX" />
+      <xs:enumeration value="AL" />
+      <xs:enumeration value="DZ" />
+      <xs:enumeration value="AS" />
+      <xs:enumeration value="AD" />
+      <xs:enumeration value="AO" />
+      <xs:enumeration value="AI" />
+      <xs:enumeration value="AQ" />
+      <xs:enumeration value="AG" />
+      <xs:enumeration value="AR" />
+      <xs:enumeration value="AM" />
+      <xs:enumeration value="AW" />
+      <xs:enumeration value="AU" />
+      <xs:enumeration value="AT" />
+      <xs:enumeration value="AZ" />
+      <xs:enumeration value="BS" />
+      <xs:enumeration value="BH" />
+      <xs:enumeration value="BD" />
+      <xs:enumeration value="BB" />
+      <xs:enumeration value="BY" />
+      <xs:enumeration value="BE" />
+      <xs:enumeration value="BZ" />
+      <xs:enumeration value="BJ" />
+      <xs:enumeration value="BM" />
+      <xs:enumeration value="BT" />
+      <xs:enumeration value="BO" />
+      <xs:enumeration value="BQ" />
+      <xs:enumeration value="BA" />
+      <xs:enumeration value="BW" />
+      <xs:enumeration value="BV" />
+      <xs:enumeration value="BR" />
+      <xs:enumeration value="IO" />
+      <xs:enumeration value="BN" />
+      <xs:enumeration value="BG" />
+      <xs:enumeration value="BF" />
+      <xs:enumeration value="BI" />
+      <xs:enumeration value="KH" />
+      <xs:enumeration value="CM" />
+      <xs:enumeration value="CA" />
+      <xs:enumeration value="CV" />
+      <xs:enumeration value="KY" />
+      <xs:enumeration value="CF" />
+      <xs:enumeration value="TD" />
+      <xs:enumeration value="CL" />
+      <xs:enumeration value="CN" />
+      <xs:enumeration value="CX" />
+      <xs:enumeration value="CC" />
+      <xs:enumeration value="CO" />
+      <xs:enumeration value="KM" />
+      <xs:enumeration value="CG" />
+      <xs:enumeration value="CD" />
+      <xs:enumeration value="CK" />
+      <xs:enumeration value="CR" />
+      <xs:enumeration value="CI" />
+      <xs:enumeration value="HR" />
+      <xs:enumeration value="CU" />
+      <xs:enumeration value="CW" />
+      <xs:enumeration value="CY" />
+      <xs:enumeration value="CZ" />
+      <xs:enumeration value="DK" />
+      <xs:enumeration value="DJ" />
+      <xs:enumeration value="DM" />
+      <xs:enumeration value="DO" />
+      <xs:enumeration value="EC" />
+      <xs:enumeration value="EG" />
+      <xs:enumeration value="SV" />
+      <xs:enumeration value="GQ" />
+      <xs:enumeration value="ER" />
+      <xs:enumeration value="EE" />
+      <xs:enumeration value="ET" />
+      <xs:enumeration value="FK" />
+      <xs:enumeration value="FO" />
+      <xs:enumeration value="FJ" />
+      <xs:enumeration value="FI" />
+      <xs:enumeration value="FR" />
+      <xs:enumeration value="GF" />
+      <xs:enumeration value="PF" />
+      <xs:enumeration value="TF" />
+      <xs:enumeration value="GA" />
+      <xs:enumeration value="GM" />
+      <xs:enumeration value="GE" />
+      <xs:enumeration value="DE" />
+      <xs:enumeration value="GH" />
+      <xs:enumeration value="GI" />
+      <xs:enumeration value="GR" />
+      <xs:enumeration value="GL" />
+      <xs:enumeration value="GD" />
+      <xs:enumeration value="GP" />
+      <xs:enumeration value="GU" />
+      <xs:enumeration value="GT" />
+      <xs:enumeration value="GG" />
+      <xs:enumeration value="GN" />
+      <xs:enumeration value="GW" />
+      <xs:enumeration value="GY" />
+      <xs:enumeration value="HT" />
+      <xs:enumeration value="HM" />
+      <xs:enumeration value="VA" />
+      <xs:enumeration value="HN" />
+      <xs:enumeration value="HK" />
+      <xs:enumeration value="HU" />
+      <xs:enumeration value="IS" />
+      <xs:enumeration value="IN" />
+      <xs:enumeration value="ID" />
+      <xs:enumeration value="IR" />
+      <xs:enumeration value="IQ" />
+      <xs:enumeration value="IE" />
+      <xs:enumeration value="IM" />
+      <xs:enumeration value="IL" />
+      <xs:enumeration value="IT" />
+      <xs:enumeration value="JM" />
+      <xs:enumeration value="JP" />
+      <xs:enumeration value="JE" />
+      <xs:enumeration value="JO" />
+      <xs:enumeration value="KZ" />
+      <xs:enumeration value="KE" />
+      <xs:enumeration value="KI" />
+      <xs:enumeration value="KP" />
+      <xs:enumeration value="KR" />
+      <xs:enumeration value="KW" />
+      <xs:enumeration value="KG" />
+      <xs:enumeration value="LA" />
+      <xs:enumeration value="LV" />
+      <xs:enumeration value="LB" />
+      <xs:enumeration value="LS" />
+      <xs:enumeration value="LR" />
+      <xs:enumeration value="LY" />
+      <xs:enumeration value="LI" />
+      <xs:enumeration value="LT" />
+      <xs:enumeration value="LU" />
+      <xs:enumeration value="MO" />
+      <xs:enumeration value="MK" />
+      <xs:enumeration value="MG" />
+      <xs:enumeration value="MW" />
+      <xs:enumeration value="MY" />
+      <xs:enumeration value="MV" />
+      <xs:enumeration value="ML" />
+      <xs:enumeration value="MT" />
+      <xs:enumeration value="MH" />
+      <xs:enumeration value="MQ" />
+      <xs:enumeration value="MR" />
+      <xs:enumeration value="MU" />
+      <xs:enumeration value="YT" />
+      <xs:enumeration value="MX" />
+      <xs:enumeration value="FM" />
+      <xs:enumeration value="MD" />
+      <xs:enumeration value="MC" />
+      <xs:enumeration value="MN" />
+      <xs:enumeration value="ME" />
+      <xs:enumeration value="MS" />
+      <xs:enumeration value="MA" />
+      <xs:enumeration value="MZ" />
+      <xs:enumeration value="MM" />
+      <xs:enumeration value="NA" />
+      <xs:enumeration value="NR" />
+      <xs:enumeration value="NP" />
+      <xs:enumeration value="NL" />
+      <xs:enumeration value="NC" />
+      <xs:enumeration value="NZ" />
+      <xs:enumeration value="NI" />
+      <xs:enumeration value="NE" />
+      <xs:enumeration value="NG" />
+      <xs:enumeration value="NU" />
+      <xs:enumeration value="NF" />
+      <xs:enumeration value="MP" />
+      <xs:enumeration value="NO" />
+      <xs:enumeration value="OM" />
+      <xs:enumeration value="PK" />
+      <xs:enumeration value="PW" />
+      <xs:enumeration value="PS" />
+      <xs:enumeration value="PA" />
+      <xs:enumeration value="PG" />
+      <xs:enumeration value="PY" />
+      <xs:enumeration value="PE" />
+      <xs:enumeration value="PH" />
+      <xs:enumeration value="PN" />
+      <xs:enumeration value="PL" />
+      <xs:enumeration value="PT" />
+      <xs:enumeration value="PR" />
+      <xs:enumeration value="QA" />
+      <xs:enumeration value="RE" />
+      <xs:enumeration value="RO" />
+      <xs:enumeration value="RU" />
+      <xs:enumeration value="RW" />
+      <xs:enumeration value="BL" />
+      <xs:enumeration value="SH" />
+      <xs:enumeration value="KN" />
+      <xs:enumeration value="LC" />
+      <xs:enumeration value="MF" />
+      <xs:enumeration value="PM" />
+      <xs:enumeration value="VC" />
+      <xs:enumeration value="WS" />
+      <xs:enumeration value="SM" />
+      <xs:enumeration value="ST" />
+      <xs:enumeration value="SA" />
+      <xs:enumeration value="SN" />
+      <xs:enumeration value="RS" />
+      <xs:enumeration value="SC" />
+      <xs:enumeration value="SL" />
+      <xs:enumeration value="SG" />
+      <xs:enumeration value="SX" />
+      <xs:enumeration value="SK" />
+      <xs:enumeration value="SI" />
+      <xs:enumeration value="SB" />
+      <xs:enumeration value="SO" />
+      <xs:enumeration value="ZA" />
+      <xs:enumeration value="GS" />
+      <xs:enumeration value="SS" />
+      <xs:enumeration value="ES" />
+      <xs:enumeration value="LK" />
+      <xs:enumeration value="SD" />
+      <xs:enumeration value="SR" />
+      <xs:enumeration value="SJ" />
+      <xs:enumeration value="SZ" />
+      <xs:enumeration value="SE" />
+      <xs:enumeration value="CH" />
+      <xs:enumeration value="SY" />
+      <xs:enumeration value="TW" />
+      <xs:enumeration value="TJ" />
+      <xs:enumeration value="TZ" />
+      <xs:enumeration value="TH" />
+      <xs:enumeration value="TL" />
+      <xs:enumeration value="TG" />
+      <xs:enumeration value="TK" />
+      <xs:enumeration value="TO" />
+      <xs:enumeration value="TT" />
+      <xs:enumeration value="TN" />
+      <xs:enumeration value="TR" />
+      <xs:enumeration value="TM" />
+      <xs:enumeration value="TC" />
+      <xs:enumeration value="TV" />
+      <xs:enumeration value="UG" />
+      <xs:enumeration value="UA" />
+      <xs:enumeration value="AE" />
+      <xs:enumeration value="GB" />
+      <xs:enumeration value="US" />
+      <xs:enumeration value="UM" />
+      <xs:enumeration value="UY" />
+      <xs:enumeration value="UZ" />
+      <xs:enumeration value="VU" />
+      <xs:enumeration value="VE" />
+      <xs:enumeration value="VN" />
+      <xs:enumeration value="VG" />
+      <xs:enumeration value="VI" />
+      <xs:enumeration value="WF" />
+      <xs:enumeration value="EH" />
+      <xs:enumeration value="YE" />
+      <xs:enumeration value="ZM" />
+      <xs:enumeration value="ZW" />
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>

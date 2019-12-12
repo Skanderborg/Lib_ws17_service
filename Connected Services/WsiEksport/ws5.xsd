@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="https://uni-login.dk" elementFormDefault="qualified" targetNamespace="https://uni-login.dk" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:include schemaLocation="https://wsieksport.uni-login.dk:443/wsieksport-v4/ws?xsd=3" />
+  <xs:element name="helloWorld" type="tns:NoArgs" />
+  <xs:element name="helloWorldResponse" type="tns:HelloWorldResponse" />
+  <xs:element name="helloWorldWithCredentials" type="tns:Credentials" />
+  <xs:element name="helloWorldWithCredentialsResponse" type="tns:HelloWorldResponse" />
+  <xs:element name="helloWorldWithDB" type="tns:Credentials" />
+  <xs:element name="helloWorldWithDBResponse" type="tns:HelloWorldResponse" />
+  <xs:element name="svarResponse" type="tns:SvarResponse" />
+  <xs:element name="authentificationError" type="tns:AuthentificationError" />
+  <xs:element name="hentDataAftaler" type="tns:Credentials" />
+  <xs:element name="hentDataAftalerResponse" type="tns:HentDataAftalerResponse" />
+</xs:schema>

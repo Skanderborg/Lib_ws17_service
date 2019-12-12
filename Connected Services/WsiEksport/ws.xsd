@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:uni="https://uni-login.dk" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" xmlns:tns="https://uni-login.dk/data/transitional" xmlns:d="https://uni-login.dk/data" elementFormDefault="qualified" targetNamespace="https://uni-login.dk/data/transitional" xml:lang="da" jxb:version="2.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="https://wsieksport.uni-login.dk:443/wsieksport-v4/ws?xsd=1" namespace="https://uni-login.dk/data" />
+  <xs:import schemaLocation="https://wsieksport.uni-login.dk:443/wsieksport-v4/ws?xsd=3" namespace="https://uni-login.dk" />
+  <xs:annotation>
+    <xs:documentation>
+            Overgangsskema; midlertidige udgaver af elementer fra basisskemaet.
+            Disse anvendes i wsiEKSPORT, hvor gammel datas faktiske kvalitet ikke overholder
+            op til standarden, der sættes i basisskemaet og som nye importer lever op til.
+            På længere sigt vil wsiEKSPORT anvende de rigtige elementer, når gamle import-
+            kilder er lukket, så der kun findes data fra wsaIMPORT.
+        </xs:documentation>
+  </xs:annotation>
+  <xs:element name="EmailAddress" type="xs:token" />
+  <xs:element name="CivilRegistrationNumber" type="xs:token" />
+  <xs:element name="Location" type="xs:token" />
+  <xs:complexType name="phoneNumberProtectable">
+    <xs:simpleContent>
+      <xs:extension base="xs:token">
+        <xs:attribute name="protected" type="xs:boolean" use="required" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="personMedium">
+    <xs:annotation>
+      <xs:documentation>
+                Mellemstor udgave af persondata. Anvendes direkte i medium eksport.
+                Basistype for personFull; se nedenfor.
+            </xs:documentation>
+    </xs:annotation>
+    <xs:complexContent mixed="false">
+      <xs:extension base="d:personMini">
+        <xs:sequence>
+          <xs:element minOccurs="0" ref="tns:CivilRegistrationNumber">
+            <xs:annotation>
+              <xs:documentation>
+                                Udover at blive skjult ved navne- og adressebeskyttelse,
+                                kan feltet mangle i gamle importer.
+                            </xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element minOccurs="0" ref="tns:EmailAddress" />
+          <xs:element minOccurs="0" ref="d:BirthDate" />
+          <xs:element minOccurs="0" ref="d:Gender" />
+          <xs:element minOccurs="0" ref="d:PhotoId" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="personFullBase">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:personMedium">
+        <xs:sequence>
+          <xs:element minOccurs="0" ref="d:Address" />
+        </xs:sequence>
+        <xs:attribute name="protected" type="xs:boolean" use="required" />
+        <xs:attribute name="verificationLevel" type="uni:Verifikationsniveau" use="required" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="uniLoginFull">
+    <xs:complexContent mixed="false">
+      <xs:extension base="d:uniLoginMini">
+        <xs:sequence>
+          <xs:element ref="d:InitialPassword" />
+          <xs:element minOccurs="0" ref="tns:CivilRegistrationNumber">
+            <xs:annotation>
+              <xs:documentation>
+                                Manuelt oprettede brugere er ikke nødvendigvis tilknyttet et CPR-nummer.
+                            </xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element ref="d:PasswordState" />
+          <xs:element ref="d:UniqueName" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="studentMini">
+    <xs:annotation>
+      <xs:documentation>
+                Minimal basistype for student.
+                Elevoplysninger. Anvendes i institutionPerson.
+                I import og fuld eksport tilføjes ContactPerson.
+            </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="Role" type="uni:Elevrolle" />
+      <xs:element minOccurs="0" name="StudentNumber">
+        <xs:annotation>
+          <xs:documentation>Elevens studienummer fra lokalt administrativt system.</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="uni:NonEmptyToken">
+            <xs:maxLength value="26" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="Level" type="uni:Trin">
+        <xs:annotation>
+          <xs:documentation>Elevens trin.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" ref="tns:Location" />
+      <xs:element name="MainGroupId" type="uni:Gruppekode">
+        <xs:annotation>
+          <xs:documentation>
+                        Elevens hovedgruppe.
+                        For grundskoler er hovedgruppen elevens klasse, og for andre
+                        institutioner kan den for eksempel være studieretning eller stamhold.
+                        Feltet skal indeholde gruppens unikke id på institutionen (GroupId)
+                        og må kun referere til grupper med groupType "Hovedgruppe".
+                        Bemærk, at dette krav ikke kan garanteres at være overholdt i eksporten
+                        pga. gamle importer og manuelt tilknyttede brugere.
+                    </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="unbounded" ref="d:GroupId">
+        <xs:annotation>
+          <xs:documentation>
+                        Yderligere grupper, som eleven er tilknyttet, ud over tilknytningen via MainGroupId.
+                    </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Employee" type="tns:employee">
+    <xs:annotation>
+      <xs:documentation>Læreroplysninger om personen.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="employee">
+    <xs:annotation>
+      <xs:documentation>Læreroplysninger. Anvendes i institutionPerson.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent mixed="false">
+      <xs:extension base="d:employeeBase">
+        <xs:sequence>
+          <xs:element maxOccurs="unbounded" name="Role" type="uni:Ansatrolle" />
+          <xs:element minOccurs="0" ref="d:ShortName" />
+          <xs:element minOccurs="0" ref="d:Occupation" />
+          <xs:element minOccurs="0" ref="tns:Location" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" ref="d:GroupId">
+            <xs:annotation>
+              <xs:documentation>De grupper, som medarbejderen er tilknyttet.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+</xs:schema>

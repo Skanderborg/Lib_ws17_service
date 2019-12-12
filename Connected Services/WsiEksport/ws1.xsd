@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:exp="https://wsieksport.uni-login.dk/eksport" xmlns:tns="https://wsieksport.uni-login.dk/eksport/full" xmlns:trans="https://uni-login.dk/data/transitional" xmlns:d="https://uni-login.dk/data" elementFormDefault="qualified" targetNamespace="https://wsieksport.uni-login.dk/eksport/full" xml:lang="da" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="https://wsieksport.uni-login.dk:443/wsieksport-v4/ws?xsd=1" namespace="https://uni-login.dk/data" />
+  <xs:import schemaLocation="https://wsieksport.uni-login.dk:443/wsieksport-v4/ws?xsd=2" namespace="https://uni-login.dk/data/transitional" />
+  <xs:import schemaLocation="https://wsieksport.uni-login.dk:443/wsieksport-v4/ws?xsd=5" namespace="https://wsieksport.uni-login.dk/eksport" />
+  <xs:annotation>
+    <xs:documentation>Skema for fuld eksport.</xs:documentation>
+  </xs:annotation>
+  <xs:element name="UNILoginExport" type="tns:uniLoginExportFull">
+    <xs:key name="source_key">
+      <xs:selector xpath="exp:ImportSource" />
+      <xs:field xpath="@source" />
+    </xs:key>
+    <xs:keyref name="instperson_source_keyref" refer="tns:source_key">
+      <xs:selector xpath="tns:Institution/tns:InstitutionPerson" />
+      <xs:field xpath="@source" />
+    </xs:keyref>
+  </xs:element>
+  <xs:complexType name="uniLoginExportFull">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:uniLoginExportFullBase">
+        <xs:sequence>
+          <xs:element name="Institution" type="tns:institutionFull">
+            <xs:unique name="unik_LocalPersonID_pr_import">
+              <xs:annotation>
+                <xs:documentation>
+                                    InstitutionNumber+source+LocalPersonId skal være unik.
+                                    Da der kun kan indeholdes én source og ét institutionNumber i en import,
+                                    er dette ensbetydende med at LocalPersonId skal være unik i en import.
+                                </xs:documentation>
+              </xs:annotation>
+              <xs:selector xpath="tns:InstitutionPerson" />
+              <xs:field xpath="@source" />
+              <xs:field xpath="d:LocalPersonId" />
+            </xs:unique>
+            <xs:key name="unik_GroupId_pr_inst">
+              <xs:selector xpath="d:Group" />
+              <xs:field xpath="d:GroupId" />
+            </xs:key>
+            <xs:keyref name="Student_GroupId_ref" refer="tns:unik_GroupId_pr_inst">
+              <xs:selector xpath="tns:InstitutionPerson/tns:Student/d:GroupId" />
+              <xs:field xpath="." />
+            </xs:keyref>
+            <xs:keyref name="Employee_GroupId_ref" refer="tns:unik_GroupId_pr_inst">
+              <xs:selector xpath="tns:InstitutionPerson/trans:Employee/d:GroupId" />
+              <xs:field xpath="." />
+            </xs:keyref>
+            <xs:keyref name="MainGroupId_ref" refer="tns:unik_GroupId_pr_inst">
+              <xs:selector xpath="tns:InstitutionPerson/tns:Student/d:MainGroupId" />
+              <xs:field xpath="." />
+            </xs:keyref>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="uniLoginExportFullBase">
+    <xs:complexContent mixed="false">
+      <xs:restriction base="exp:uniLoginExportBase">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" ref="exp:ImportSource" />
+        </xs:sequence>
+        <xs:attribute fixed="full" name="accessLevel" type="xs:token" use="required" />
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="institutionFull">
+    <xs:complexContent mixed="false">
+      <xs:extension base="d:institutionWithGroupsBase">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="InstitutionPerson" type="tns:institutionPersonFull">
+            <xs:annotation>
+              <xs:documentation>Ansatte og elever på institutionen.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="institutionPersonFull">
+    <xs:complexContent mixed="false">
+      <xs:extension base="exp:institutionPersonExportFullBase">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Person" type="tns:personFull">
+            <xs:annotation>
+              <xs:documentation>
+                                Elementet er valgfrit, da det ikke findes på brugere oprettet manuelt uden for
+                                importsystemet.
+                            </xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:choice minOccurs="0">
+            <xs:annotation>
+              <xs:documentation>
+                                Oplysninger ud fra personens type. Mangler for manuelt oprettede brugere.
+                            </xs:documentation>
+            </xs:annotation>
+            <xs:element name="Student" type="tns:studentFull">
+              <xs:annotation>
+                <xs:documentation>Elevoplysninger om personen.</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+            <xs:element ref="trans:Employee" />
+            <xs:element ref="d:Extern" />
+          </xs:choice>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="personFull">
+    <xs:complexContent mixed="false">
+      <xs:extension base="trans:personFullBase">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="HomePhoneNumber" type="trans:phoneNumberProtectable">
+            <xs:annotation>
+              <xs:documentation>Hjemmetelefon.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element minOccurs="0" name="WorkPhoneNumber" type="trans:phoneNumberProtectable">
+            <xs:annotation>
+              <xs:documentation>Arbejdstelefon</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element minOccurs="0" name="MobilePhoneNumber" type="trans:phoneNumberProtectable">
+            <xs:annotation>
+              <xs:documentation>Mobiltelefon</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="studentFull">
+    <xs:complexContent mixed="false">
+      <xs:extension base="trans:studentMini">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="10" name="ContactPerson" type="tns:contactPersonFull">
+            <xs:annotation>
+              <xs:documentation>Kontaktperson.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="contactPersonFull">
+    <xs:complexContent mixed="false">
+      <xs:extension base="exp:contactPersonExportBase">
+        <xs:sequence>
+          <xs:element name="Person" type="tns:personFull">
+            <xs:annotation>
+              <xs:documentation>Personoplysninger på kontaktpersonen.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element minOccurs="0" name="UNILogin" type="trans:uniLoginFull">
+            <xs:annotation>
+              <xs:documentation>Eventuelle UNI•Login-oplysninger.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+</xs:schema>

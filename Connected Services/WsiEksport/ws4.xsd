@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:eksfm="https://wsieksport.uni-login.dk/eksport/fullmyndighed" xmlns:tns="https://wsieksport.uni-login.dk/ws" xmlns:eksf="https://wsieksport.uni-login.dk/eksport/full" xmlns:eksm="https://wsieksport.uni-login.dk/eksport/medium" xmlns:ekss="https://wsieksport.uni-login.dk/eksport/small" xmlns:uni="https://uni-login.dk" elementFormDefault="qualified" targetNamespace="https://wsieksport.uni-login.dk/ws" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="https://wsieksport.uni-login.dk:443/wsieksport-v4/ws?xsd=3" namespace="https://uni-login.dk" />
+  <xs:import schemaLocation="https://wsieksport.uni-login.dk:443/wsieksport-v4/ws?xsd=7" namespace="https://wsieksport.uni-login.dk/eksport/fullmyndighed" />
+  <xs:import schemaLocation="https://wsieksport.uni-login.dk:443/wsieksport-v4/ws?xsd=6" namespace="https://wsieksport.uni-login.dk/eksport/full" />
+  <xs:import schemaLocation="https://wsieksport.uni-login.dk:443/wsieksport-v4/ws?xsd=8" namespace="https://wsieksport.uni-login.dk/eksport/medium" />
+  <xs:import schemaLocation="https://wsieksport.uni-login.dk:443/wsieksport-v4/ws?xsd=9" namespace="https://wsieksport.uni-login.dk/eksport/small" />
+  <xs:complexType name="EksporterXml">
+    <xs:complexContent mixed="false">
+      <xs:extension base="uni:Credentials">
+        <xs:sequence>
+          <xs:element name="instnr" type="xs:string" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="EksporterXmlResponseFullMyndighed">
+    <xs:sequence>
+      <xs:annotation>
+        <xs:documentation>
+                    Returnerer et xml dokument med en komplet eksport af institutionen inklusiv myndighedsoplysninger.
+                </xs:documentation>
+      </xs:annotation>
+      <xs:element name="xml">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element ref="eksfm:UNILoginExport" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="EksporterXmlResponseFull">
+    <xs:sequence>
+      <xs:annotation>
+        <xs:documentation>
+                    Returnerer et xml dokument med en komplet eksport af institutionen.
+                </xs:documentation>
+      </xs:annotation>
+      <xs:element name="xml">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element ref="eksf:UNILoginExport" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="EksporterXmlResponseMedium">
+    <xs:sequence>
+      <xs:annotation>
+        <xs:documentation>
+                    Returnerer et xml dokument med en medium eksport af institutionen.
+                </xs:documentation>
+      </xs:annotation>
+      <xs:element name="xml">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element ref="eksm:UNILoginExport" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="EksporterXmlResponseSmall">
+    <xs:sequence>
+      <xs:annotation>
+        <xs:documentation>
+                    Returnerer et xml dokument med en minimum eksport af institutionen.
+                </xs:documentation>
+      </xs:annotation>
+      <xs:element name="xml">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element ref="ekss:UNILoginExport" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

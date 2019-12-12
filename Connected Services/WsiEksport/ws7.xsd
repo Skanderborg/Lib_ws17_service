@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:uni="https://uni-login.dk" xmlns:tns="https://wsieksport.uni-login.dk/ws" elementFormDefault="qualified" targetNamespace="https://wsieksport.uni-login.dk/ws" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:include schemaLocation="https://wsieksport.uni-login.dk:443/wsieksport-v4/ws?xsd=10" />
+  <xs:import schemaLocation="https://wsieksport.uni-login.dk:443/wsieksport-v4/ws?xsd=3" namespace="https://uni-login.dk" />
+  <xs:element name="eksporterXmlLille" type="tns:EksporterXml" />
+  <xs:element name="eksporterXmlLilleResponse" type="tns:EksporterXmlResponseSmall" />
+  <xs:element name="eksporterXmlMellem" type="tns:EksporterXml" />
+  <xs:element name="eksporterXmlMellemResponse" type="tns:EksporterXmlResponseMedium" />
+  <xs:element name="eksporterXmlFuld" type="tns:EksporterXml" />
+  <xs:element name="eksporterXmlFuldResponse" type="tns:EksporterXmlResponseFull" />
+  <xs:element name="eksporterXmlFuldMyndighed" type="tns:EksporterXml" />
+  <xs:element name="eksporterXmlFuldMyndighedResponse" type="tns:EksporterXmlResponseFullMyndighed" />
+  <xs:element name="hentDataAftalerLille" type="uni:Credentials" />
+  <xs:element name="hentDataAftalerLilleResponse" type="uni:HentDataAftalerResponse" />
+  <xs:element name="hentDataAftalerMellem" type="uni:Credentials" />
+  <xs:element name="hentDataAftalerMellemResponse" type="uni:HentDataAftalerResponse" />
+  <xs:element name="hentDataAftalerFuld" type="uni:Credentials" />
+  <xs:element name="hentDataAftalerFuldResponse" type="uni:HentDataAftalerResponse" />
+  <xs:element name="hentDataAftalerFuldMyndighed" type="uni:Credentials" />
+  <xs:element name="hentDataAftalerFuldMyndighedResponse" type="uni:HentDataAftalerResponse" />
+</xs:schema>

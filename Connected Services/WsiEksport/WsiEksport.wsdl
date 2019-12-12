@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="utf-8"?>
+<definitions xmlns:wsoap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:tns="https://wsieksport.uni-login.dk/ws" xmlns:uni="https://uni-login.dk" xmlns:xs="http://www.w3.org/2001/XMLSchema" name="WsiEksport" targetNamespace="https://wsieksport.uni-login.dk/ws" xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <types>
+    <xs:schema>
+      <xs:import schemaLocation="https://wsieksport.uni-login.dk:443/wsieksport-v4/ws?xsd=4" namespace="https://uni-login.dk" />
+      <xs:import schemaLocation="https://wsieksport.uni-login.dk:443/wsieksport-v4/ws?xsd=11" namespace="https://wsieksport.uni-login.dk/ws" />
+    </xs:schema>
+  </types>
+  <message name="HelloWorldIn">
+    <part name="parameters" element="uni:helloWorld" />
+  </message>
+  <message name="HelloWorldOut">
+    <part name="return" element="uni:helloWorldResponse" />
+  </message>
+  <message name="HelloWorldWithCredentialsIn">
+    <part name="parameters" element="uni:helloWorldWithCredentials" />
+  </message>
+  <message name="HelloWorldWithCredentialsOut">
+    <part name="return" element="uni:helloWorldWithCredentialsResponse" />
+  </message>
+  <message name="HelloWorldWithDBIn">
+    <part name="parameters" element="uni:helloWorldWithDB" />
+  </message>
+  <message name="HelloWorldWithDBOut">
+    <part name="return" element="uni:helloWorldWithDBResponse" />
+  </message>
+  <message name="EksporterXmlLilleIn">
+    <part name="parameters" element="tns:eksporterXmlLille" />
+  </message>
+  <message name="EksporterXmlLilleOut">
+    <part name="return" element="tns:eksporterXmlLilleResponse" />
+  </message>
+  <message name="EksporterXmlMellemIn">
+    <part name="parameters" element="tns:eksporterXmlMellem" />
+  </message>
+  <message name="EksporterXmlMellemOut">
+    <part name="return" element="tns:eksporterXmlMellemResponse" />
+  </message>
+  <message name="EksporterXmlFuldIn">
+    <part name="parameters" element="tns:eksporterXmlFuld" />
+  </message>
+  <message name="EksporterXmlFuldOut">
+    <part name="return" element="tns:eksporterXmlFuldResponse" />
+  </message>
+  <message name="EksporterXmlFuldMyndighedIn">
+    <part name="parameters" element="tns:eksporterXmlFuldMyndighed" />
+  </message>
+  <message name="EksporterXmlFuldMyndighedOut">
+    <part name="return" element="tns:eksporterXmlFuldMyndighedResponse" />
+  </message>
+  <message name="hentDataAftalerLilleIn">
+    <part name="parameters" element="tns:hentDataAftalerLille" />
+  </message>
+  <message name="hentDataAftalerLilleOut">
+    <part name="return" element="tns:hentDataAftalerLilleResponse" />
+  </message>
+  <message name="hentDataAftalerMellemIn">
+    <part name="parameters" element="tns:hentDataAftalerMellem" />
+  </message>
+  <message name="hentDataAftalerMellemOut">
+    <part name="return" element="tns:hentDataAftalerMellemResponse" />
+  </message>
+  <message name="hentDataAftalerFuldIn">
+    <part name="parameters" element="tns:hentDataAftalerFuld" />
+  </message>
+  <message name="hentDataAftalerFuldOut">
+    <part name="return" element="tns:hentDataAftalerFuldResponse" />
+  </message>
+  <message name="hentDataAftalerFuldMyndighedIn">
+    <part name="parameters" element="tns:hentDataAftalerFuldMyndighed" />
+  </message>
+  <message name="hentDataAftalerFuldMyndighedOut">
+    <part name="return" element="tns:hentDataAftalerFuldMyndighedResponse" />
+  </message>
+  <message name="AuthentificationFault">
+    <part name="fault" element="uni:authentificationError" />
+  </message>
+  <portType name="WsiEksportPortType">
+    <operation name="helloWorld">
+      <documentation>Ping webservicen med simpelt kald. Returnerer "HelloWorld" hvis webservicen svarer.</documentation>
+      <input message="tns:HelloWorldIn" />
+      <output message="tns:HelloWorldOut" />
+    </operation>
+    <operation name="helloWorldWithCredentials">
+      <documentation>Ping webservicen med simpelt kald. Returnerer "HelloWorldWithCredentials" hvis webservicen svarer og brugernavn/password er korrekt angivet.</documentation>
+      <input message="tns:HelloWorldWithCredentialsIn" />
+      <output message="tns:HelloWorldWithCredentialsOut" />
+      <fault name="authentificationFault" message="tns:AuthentificationFault" />
+    </operation>
+    <operation name="helloWorldWithDB">
+      <documentation>Ping webservicen med simpelt kald. Returnerer "HelloWorld" samt tidspunkt fra databasen hvis webservicen og databasen svarer.</documentation>
+      <input message="tns:HelloWorldWithDBIn" />
+      <output message="tns:HelloWorldWithDBOut" />
+    </operation>
+    <operation name="eksporterXmlLille">
+      <input message="tns:EksporterXmlLilleIn" />
+      <output message="tns:EksporterXmlLilleOut" />
+      <fault name="authentificationFault" message="tns:AuthentificationFault" />
+    </operation>
+    <operation name="eksporterXmlMellem">
+      <input message="tns:EksporterXmlMellemIn" />
+      <output message="tns:EksporterXmlMellemOut" />
+      <fault name="authentificationFault" message="tns:AuthentificationFault" />
+    </operation>
+    <operation name="eksporterXmlFuld">
+      <input message="tns:EksporterXmlFuldIn" />
+      <output message="tns:EksporterXmlFuldOut" />
+      <fault name="authentificationFault" message="tns:AuthentificationFault" />
+    </operation>
+    <operation name="eksporterXmlFuldMyndighed">
+      <input message="tns:EksporterXmlFuldMyndighedIn" />
+      <output message="tns:EksporterXmlFuldMyndighedOut" />
+      <fault name="authentificationFault" message="tns:AuthentificationFault" />
+    </operation>
+    <operation name="hentDataAftalerLille">
+      <documentation>Returnerer en liste af institutionsnumre, hvor der er lavet en dataaftale til lille eksport</documentation>
+      <input message="tns:hentDataAftalerLilleIn" />
+      <output message="tns:hentDataAftalerLilleOut" />
+      <fault name="authentificationFault" message="tns:AuthentificationFault" />
+    </operation>
+    <operation name="hentDataAftalerMellem">
+      <documentation>Returnerer en liste af institutionsnumre, hvor der er lavet en dataaftale til mellem eksport</documentation>
+      <input message="tns:hentDataAftalerMellemIn" />
+      <output message="tns:hentDataAftalerMellemOut" />
+      <fault name="authentificationFault" message="tns:AuthentificationFault" />
+    </operation>
+    <operation name="hentDataAftalerFuld">
+      <documentation>Returnerer en liste af institutionsnumre, hvor der er lavet en dataaftale til fuld eksport</documentation>
+      <input message="tns:hentDataAftalerFuldIn" />
+      <output message="tns:hentDataAftalerFuldOut" />
+      <fault name="authentificationFault" message="tns:AuthentificationFault" />
+    </operation>
+    <operation name="hentDataAftalerFuldMyndighed">
+      <documentation>Returnerer en liste af institutionsnumre, hvor der er lavet en dataaftale til fuld eksport</documentation>
+      <input message="tns:hentDataAftalerFuldMyndighedIn" />
+      <output message="tns:hentDataAftalerFuldMyndighedOut" />
+      <fault name="authentificationFault" message="tns:AuthentificationFault" />
+    </operation>
+  </portType>
+  <binding name="WsiEksportSoap" type="tns:WsiEksportPortType">
+    <wsoap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <operation name="helloWorld">
+      <wsoap12:operation soapAction="https://wsieksport.uni-login.dk/helloWorld" />
+      <input>
+        <wsoap12:body use="literal" />
+      </input>
+      <output>
+        <wsoap12:body use="literal" />
+      </output>
+    </operation>
+    <operation name="helloWorldWithCredentials">
+      <wsoap12:operation soapAction="https://wsieksport.uni-login.dk/helloWorldWithCredentials" />
+      <input>
+        <wsoap12:body use="literal" />
+      </input>
+      <output>
+        <wsoap12:body use="literal" />
+      </output>
+      <fault name="authentificationFault">
+        <wsoap12:fault use="literal" name="authentificationFault" namespace="" />
+      </fault>
+    </operation>
+    <operation name="helloWorldWithDB">
+      <wsoap12:operation soapAction="https://wsieksport.uni-login.dk/helloWorldWithDB" />
+      <input>
+        <wsoap12:body use="literal" />
+      </input>
+      <output>
+        <wsoap12:body use="literal" />
+      </output>
+    </operation>
+    <operation name="eksporterXmlLille">
+      <wsoap12:operation soapAction="https://wsieksport.uni-login.dk/eksporterXmlLille" />
+      <input>
+        <wsoap12:body use="literal" />
+      </input>
+      <output>
+        <wsoap12:body use="literal" />
+      </output>
+      <fault name="authentificationFault">
+        <wsoap12:fault use="literal" name="authentificationFault" namespace="" />
+      </fault>
+    </operation>
+    <operation name="eksporterXmlMellem">
+      <wsoap12:operation soapAction="https://wsieksport.uni-login.dk/eksporterXmlMellem" />
+      <input>
+        <wsoap12:body use="literal" />
+      </input>
+      <output>
+        <wsoap12:body use="literal" />
+      </output>
+      <fault name="authentificationFault">
+        <wsoap12:fault use="literal" name="authentificationFault" namespace="" />
+      </fault>
+    </operation>
+    <operation name="eksporterXmlFuld">
+      <wsoap12:operation soapAction="https://wsieksport.uni-login.dk/eksporterXmlFuld" />
+      <input>
+        <wsoap12:body use="literal" />
+      </input>
+      <output>
+        <wsoap12:body use="literal" />
+      </output>
+      <fault name="authentificationFault">
+        <wsoap12:fault use="literal" name="authentificationFault" namespace="" />
+      </fault>
+    </operation>
+    <operation name="eksporterXmlFuldMyndighed">
+      <wsoap12:operation soapAction="https://wsieksport.uni-login.dk/eksporterXmlFuldMyndighed" />
+      <input>
+        <wsoap12:body use="literal" />
+      </input>
+      <output>
+        <wsoap12:body use="literal" />
+      </output>
+      <fault name="authentificationFault">
+        <wsoap12:fault use="literal" name="authentificationFault" namespace="" />
+      </fault>
+    </operation>
+    <operation name="hentDataAftalerLille">
+      <wsoap12:operation soapAction="https://wsieksport.uni-login.dk/hentDataAftalerLille" />
+      <input>
+        <wsoap12:body use="literal" />
+      </input>
+      <output>
+        <wsoap12:body use="literal" />
+      </output>
+      <fault name="authentificationFault">
+        <wsoap12:fault use="literal" name="authentificationFault" namespace="" />
+      </fault>
+    </operation>
+    <operation name="hentDataAftalerMellem">
+      <wsoap12:operation soapAction="https://wsieksport.uni-login.dk/hentDataAftalerMellem" />
+      <input>
+        <wsoap12:body use="literal" />
+      </input>
+      <output>
+        <wsoap12:body use="literal" />
+      </output>
+      <fault name="authentificationFault">
+        <wsoap12:fault use="literal" name="authentificationFault" namespace="" />
+      </fault>
+    </operation>
+    <operation name="hentDataAftalerFuld">
+      <wsoap12:operation soapAction="https://wsieksport.uni-login.dk/hentDataAftalerFuld" />
+      <input>
+        <wsoap12:body use="literal" />
+      </input>
+      <output>
+        <wsoap12:body use="literal" />
+      </output>
+      <fault name="authentificationFault">
+        <wsoap12:fault use="literal" name="authentificationFault" namespace="" />
+      </fault>
+    </operation>
+    <operation name="hentDataAftalerFuldMyndighed">
+      <wsoap12:operation soapAction="https://wsieksport.uni-login.dk/hentDataAftalerFuldMyndighed" />
+      <input>
+        <wsoap12:body use="literal" />
+      </input>
+      <output>
+        <wsoap12:body use="literal" />
+      </output>
+      <fault name="authentificationFault">
+        <wsoap12:fault use="literal" name="authentificationFault" namespace="" />
+      </fault>
+    </operation>
+  </binding>
+  <service name="WsiEksport">
+    <port name="WsiEksportPort" binding="tns:WsiEksportSoap">
+      <wsoap12:address location="https://wsieksport.uni-login.dk:443/wsieksport-v4/ws" />
+    </port>
+  </service>
+</definitions>

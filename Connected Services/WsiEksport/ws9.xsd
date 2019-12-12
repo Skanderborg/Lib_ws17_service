@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:uni="https://uni-login.dk" xmlns:tns="https://wsieksport.uni-login.dk/eksport" xmlns:trans="https://uni-login.dk/data/transitional" xmlns:d="https://uni-login.dk/data" elementFormDefault="qualified" targetNamespace="https://wsieksport.uni-login.dk/eksport" xml:lang="da" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="https://wsieksport.uni-login.dk:443/wsieksport-v4/ws?xsd=3" namespace="https://uni-login.dk" />
+  <xs:import schemaLocation="https://wsieksport.uni-login.dk:443/wsieksport-v4/ws?xsd=1" namespace="https://uni-login.dk/data" />
+  <xs:import schemaLocation="https://wsieksport.uni-login.dk:443/wsieksport-v4/ws?xsd=2" namespace="https://uni-login.dk/data/transitional" />
+  <xs:annotation>
+    <xs:documentation>Basisskema for eksport.</xs:documentation>
+  </xs:annotation>
+  <xs:complexType name="uniLoginExportBase">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" ref="tns:ImportSource" />
+    </xs:sequence>
+    <xs:attribute name="exportDateTime" type="xs:dateTime" use="required">
+      <xs:annotation>
+        <xs:documentation>Tidspunkt for eksport af data fra UNI•Login.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="accessLevel" type="xs:token" use="required">
+      <xs:annotation>
+        <xs:documentation>Eksportpakke. Fikseres i de nedarvede skemaer.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:element name="ImportSource">
+    <xs:annotation>
+      <xs:documentation>
+                Importkilder, der refereres til fra eksportens InstitutionPerson-objekter.
+            </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:annotation>
+        <xs:documentation>
+                    Attributterne svarer til dem, der blev sat på UNILoginImport-objektet ved import.
+                </xs:documentation>
+      </xs:annotation>
+      <xs:attributeGroup ref="d:importSourceAttrs" />
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="institutionPersonExportBase">
+    <xs:annotation>
+      <xs:documentation>
+                Basistype for institutionPerson i eksport.
+            </xs:documentation>
+    </xs:annotation>
+    <xs:attribute name="source" type="d:source" use="required">
+      <xs:annotation>
+        <xs:documentation>
+                    Angiver importkilden for den pågældedne person. Refererer til en ImportSource via dennes
+                    source-attribut. Er "HUGO Brugeradministrationen" for manuelt oprettede brugere.
+                </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="institutionPersonExportFullBase">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:institutionPersonExportBase">
+        <xs:sequence>
+          <xs:element minOccurs="0" ref="d:LocalPersonId">
+            <xs:annotation>
+              <xs:documentation>
+                                Elementet er valgfrit, da det ikke findes i gamle importer og manuelt oprettede brugere.
+                            </xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="UNILogin" type="trans:uniLoginFull" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="contactPersonExportBase">
+    <xs:complexContent mixed="false">
+      <xs:restriction base="d:contactPersonBase">
+        <xs:attribute name="accessLevel" type="uni:KontaktpersonAdgangsniveau" use="required" />
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+</xs:schema>
