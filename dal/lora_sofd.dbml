@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Database Name="LORA_SOFD" Class="lora_sofdDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Connection Mode="AppSettings" ConnectionString="Data Source=dbsrv_lora_sofd.skb.local;Initial Catalog=LORA_SOFD;Persist Security Info=True;User ID=lora_sofd_rw" SettingsObjectName="Lib_ws17_service.Properties.Settings" SettingsPropertyName="LORA_SOFDConnectionString" Provider="System.Data.SqlClient" />
+  <Table Name="unic.institutions" Member="institutions">
+    <Type Name="institution">
+      <Column Name="system_id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="institution_nr" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="institution_name" Type="System.String" DbType="NVarChar(250) NOT NULL" CanBeNull="false" />
+    </Type>
+  </Table>
+  <Table Name="unic.unic_usernames" Member="unic_usernames">
+    <Type Name="unic_username">
+      <Column Name="system_id" Type="System.Int64" DbType="BigInt NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="cpr" Type="System.String" DbType="NVarChar(10) NOT NULL" CanBeNull="false" />
+      <Column Name="unic_userid" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="institution_nr" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
+    </Type>
+  </Table>
+  <Table Name="pyt.positions" Member="positions">
+    <Type Name="position">
+      <Column Name="system_id" Type="System.Int64" DbType="BigInt NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="opus_id" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="uuid_userref" Type="System.String" DbType="NVarChar(200)" CanBeNull="true" />
+      <Column Name="los_id" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="person_ref" Type="System.String" DbType="NVarChar(15) NOT NULL" CanBeNull="false" />
+      <Column Name="kmd_suppid" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="title" Type="System.String" DbType="NVarChar(250) NOT NULL" CanBeNull="false" />
+      <Column Name="position_id" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="title_short" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="paygrade_title" Type="System.String" DbType="NVarChar(250) NOT NULL" CanBeNull="false" />
+      <Column Name="is_manager" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="payment_method" Type="System.String" DbType="NVarChar(4) NOT NULL" CanBeNull="false" />
+      <Column Name="payment_method_text" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="weekly_hours_numerator" Type="System.Decimal" DbType="Decimal(20,3) NOT NULL" CanBeNull="false" />
+      <Column Name="weekly_hours_denominator" Type="System.Decimal" DbType="Decimal(20,3) NOT NULL" CanBeNull="false" />
+      <Column Name="invoice_recipient" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="pos_pnr" Type="System.String" DbType="NVarChar(250)" CanBeNull="true" />
+      <Column Name="dsuser" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="start_date" Type="System.DateTime" DbType="Date NOT NULL" CanBeNull="false" />
+      <Column Name="leave_date" Type="System.DateTime" DbType="Date" CanBeNull="true" />
+      <Column Name="manager_opus_id" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="manager_uuid_userref" Type="System.String" DbType="NVarChar(200)" CanBeNull="true" />
+      <Column Name="updated" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="deleted" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+    </Type>
+  </Table>
+</Database>
