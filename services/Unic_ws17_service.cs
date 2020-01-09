@@ -41,13 +41,13 @@ namespace Lib_ws17_service.services
             List<string> employee_cprs = pos_repo.Cprs;
 
             WsiEksportPortTypeClient s = new WsiEksportPortTypeClient();
-            EksporterXml eksporterXml = new EksporterXml();
-            eksporterXml.wsBrugerid = wsBrugerid;
-            eksporterXml.wsPassword = wsPassword;
             Dictionary<string, unic_username> res = new Dictionary<string, unic_username>();
 
             foreach (string institution_nr in institution_nrs)
             {
+                EksporterXml eksporterXml = new EksporterXml();
+                eksporterXml.wsBrugerid = wsBrugerid;
+                eksporterXml.wsPassword = wsPassword;
                 eksporterXml.instnr = institution_nr;
                 var test = s.eksporterXmlMellem(eksporterXml);
                 uniLoginExportMedium exm = test.xml.UNILoginExport;
@@ -78,7 +78,26 @@ namespace Lib_ws17_service.services
 
         public void Save_and_update_UNICEmployees()
         {
-            Dictionary<string, unic_username> unic_employees = Get_employees_from_UnicWS17()
+            Unic_usernames_repo repo = new Unic_usernames_repo(lora_constr);
+            Dictionary<string, unic_username> unic_employees = Get_employees_from_UnicWS17();
+            List<string> sofd_unic_users = repo.Query.Select(u => u.unic_userid).ToList<string>();
+
+            foreach(KeyValuePair<string, unic_username> kvp in unic_employees)
+            {
+                if (!sofd_unic_users.Contains(kvp.Key))
+                {
+                    repo.Add(kvp.Value);
+                }
+            }
+
+            foreach(string unic_id in sofd_unic_users)
+            {
+                if (!unic_employees.ContainsKey(unic_id))
+                {
+                    unic_username to_del = repo.Query.Where(u => u.unic_userid == unic_id).First();
+                    repo.Delete(to_del);
+                }
+            }
         }
     }
 }
