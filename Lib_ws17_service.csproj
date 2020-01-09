@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>e25c68d9-2fbb-481a-ae38-c0a2e002aeac</ProjectGuid>
+    <ProjectGuid>{E25C68D9-2FBB-481A-AE38-C0A2E002AEAC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Lib_ws17_service</RootNamespace>
@@ -31,24 +31,160 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System"/>
-    
-    <Reference Include="System.Core"/>
-    <Reference Include="System.Xml.Linq"/>
-    <Reference Include="System.Data.DataSetExtensions"/>
-    
-    
-    <Reference Include="Microsoft.CSharp"/>
-    
-    <Reference Include="System.Data"/>
-    
-    <Reference Include="System.Net.Http"/>
-    
-    <Reference Include="System.Xml"/>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Linq" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
+    <Compile Include="Connected Services\WsiEksport\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="dal\Institutions_repo.cs" />
+    <Compile Include="dal\IRepo.cs" />
+    <Compile Include="dal\lora_sofd.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>lora_sofd.dbml</DependentUpon>
+    </Compile>
+    <Compile Include="dal\Position_repo.cs" />
+    <Compile Include="dal\Unic_usernames_repo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="services\Unic_ws17_service.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="Connected Services\WsiEksport\Lib_ws17_service.WsiEksport.eksporterXmlFuldMyndighedResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\WsiEksport\Lib_ws17_service.WsiEksport.eksporterXmlFuldResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\WsiEksport\Lib_ws17_service.WsiEksport.eksporterXmlLilleResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\WsiEksport\Lib_ws17_service.WsiEksport.eksporterXmlMellemResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\WsiEksport\Lib_ws17_service.WsiEksport.EksporterXmlResponseFull.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\WsiEksport\Lib_ws17_service.WsiEksport.EksporterXmlResponseFullMyndighed.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\WsiEksport\Lib_ws17_service.WsiEksport.EksporterXmlResponseMedium.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\WsiEksport\Lib_ws17_service.WsiEksport.EksporterXmlResponseSmall.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\WsiEksport\Lib_ws17_service.WsiEksport.HelloWorldResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\WsiEksport\Lib_ws17_service.WsiEksport.helloWorldResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\WsiEksport\Lib_ws17_service.WsiEksport.helloWorldWithCredentialsResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\WsiEksport\Lib_ws17_service.WsiEksport.helloWorldWithDBResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\WsiEksport\Lib_ws17_service.WsiEksport.hentDataAftalerFuldMyndighedResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\WsiEksport\Lib_ws17_service.WsiEksport.hentDataAftalerFuldResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\WsiEksport\Lib_ws17_service.WsiEksport.hentDataAftalerLilleResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\WsiEksport\Lib_ws17_service.WsiEksport.hentDataAftalerMellemResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\WsiEksport\ws.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\WsiEksport\ws1.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\WsiEksport\ws10.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\WsiEksport\ws2.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\WsiEksport\ws3.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\WsiEksport\ws4.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\WsiEksport\ws5.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\WsiEksport\ws6.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\WsiEksport\ws7.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\WsiEksport\ws8.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\WsiEksport\ws9.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\WsiEksport\WsiEksport.wsdl" />
+    <None Include="dal\lora_sofd.dbml">
+      <Generator>MSLinqToSQLGenerator</Generator>
+      <LastGenOutput>lora_sofd.designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{3259AA49-8AA1-44D3-9025-A0B520596A8C}" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="dal\lora_sofd.dbml.layout">
+      <DependentUpon>lora_sofd.dbml</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadataStorage Include="Connected Services\WsiEksport\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Connected Services\WsiEksport\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Connected Services\WsiEksport\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Connected Services\WsiEksport\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
- </Project>
+</Project>
